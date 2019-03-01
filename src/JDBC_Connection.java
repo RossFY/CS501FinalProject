@@ -9,7 +9,7 @@ public class JDBC_Connection {
     public static final String DRIVER_MYSQL = "com.mysql.jdbc.Driver";    
     // connect to MySQL
     public static final String URL = "jdbc:mysql://localhost:3306/FinalProject?"
-            + "user=root&password=38015293&useUnicode=true&verifyServerCertificate=false&characterEncoding=UTF-8&useSSL=false";
+            + "user=root&password=38015293&useUnicode=true&verifyServerCertificate=false&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true";
     
     public static Statement statement;
     

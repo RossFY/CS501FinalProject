@@ -11,16 +11,16 @@
 );
  */
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Scanner;
-import java.util.regex.Pattern;
 
 public class SGMS {
 
 	Statement statement = null;
 	Scanner in = new Scanner(System.in);
+	Operations op = new Operations();
+	checkFunctions cf = new checkFunctions();
 	
 	public void MainPage() {
 		// TODO Auto-generated method stub
@@ -43,17 +43,18 @@ public class SGMS {
 			System.out.print("Please choose the steps by input 0 to 5: ");
 			input = in.nextLine();
 			try {
-				choose = checkChoose(input);
+				choose = cf.checkChoose(input);
 				if(choose.equals("1")) {
 					boolean valid = false;
 					while(!valid) {
 						System.out.print("Please input the student ID: ");
 						String id = in.nextLine();
 						try {
-							if(checkId(id)) {
-								String result = search(id);
+							if(cf.checkId(id)) {
+								String result = op.search(id);
 								if(result.equals("")) {
 									System.out.println("Cannot find the student information for id: " + id);
+									System.out.println();
 									valid = true;
 								}else {
 									System.out.println("The student " + id + "'s information is:");
@@ -69,21 +70,20 @@ public class SGMS {
 					}
 					
 				}else if(choose.equals("2")) {
-					String result = show();
+					String result = op.show();
 					if(result.equals("")) {
 						System.out.println("There is nothing in the database.");
 						System.out.println();
 					}else {
 						System.out.println("Show all the infomation:");
 						System.out.println(result);
-						System.out.println();
 					}
 				}else if(choose.equals("3")) {
-					add();
+					op.add();
 				}else if(choose.equals("4")) {
-					modify();
+					op.modify();
 				}else if(choose.equals("5")) {
-					delete();
+					op.delete();
 				}else if(choose.equals("0")) {
 					System.out.println("Quit! Thank you for using!");
 					break;
@@ -105,233 +105,8 @@ public class SGMS {
 			e.printStackTrace();
 		}
 	}
-
-	private String search(String id) {
-		StringBuilder result = new StringBuilder();
-		String sql = "select * from student where stu_id = \'" + id + "\'";
-		ResultSet resultSet = null;
-		
-		try {
-			resultSet = statement.executeQuery(sql);
-			if(resultSet.next()) {
-				result.append("Student ID\tName\tJava\tPython\tC\tTotalScore");
-				result.append("\n" + resultSet.getString("stu_id"));
-				result.append("\t" + resultSet.getString("stu_name"));
-				result.append("\t" + resultSet.getString("Java_score"));
-				result.append("\t" + resultSet.getString("Python_score"));
-				result.append("\t" + resultSet.getString("C_score"));
-				result.append("\t" + resultSet.getString("Total_score") + "\n");
-			}
-		}catch(SQLException e) {
-			e.printStackTrace();
-		}
-		
-		JDBC_Close.close(resultSet);
-		
-		return result.toString();
-	}
 	
-	private String show() {
-		String sql = "select * from student";
-		StringBuilder result = new StringBuilder();
-		ResultSet resultSet = null;
-		
-		try {
-			resultSet = statement.executeQuery(sql);
-			boolean first = true;
-			
-			while(resultSet.next()) {
-				if(first) {
-					result.append("Student ID\tName\tJava\tPython\tC\tTotalScore");
-					first = false;
-				}
-				result.append("\n" + resultSet.getString("stu_id"));
-				result.append("\t" + resultSet.getString("stu_name"));
-				result.append("\t" + resultSet.getString("Java_score"));
-				result.append("\t" + resultSet.getString("Python_score"));
-				result.append("\t" + resultSet.getString("C_score"));
-				result.append("\t" + resultSet.getString("Total_score") + "\n");
-			}
-		}catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		JDBC_Close.close(resultSet);
-		
-		return result.toString();
-	}
 	
-	private void add() {
-		//Scanner input = new Scanner(System.in);
-		boolean duplicate = true;
-		String id = "";
-		while(duplicate) {
-			System.out.print("Please input the Student ID(Consists of 10 numbers, for example: 1111111111):");
-			id = in.nextLine();
-			try {
-				if(checkId(id)) {
-					String exist = search(id);
-					if(exist.equals("")) {
-						duplicate = false;
-					}else {
-						System.out.println("The Student ID is exist! Please input another one!");
-						System.out.println();
-					}
-				}
-				
-			}catch(Exception e) {
-				System.out.println(e.getMessage());
-				System.out.println();
-			}
-			
-		}
-		
-		System.out.print("Please input the Student Name: ");
-		String name = in.nextLine();
-		
-		boolean valid = false;
-		double Java = 0.0;
-		double Python = 0.0;
-		double C = 0.0;
-		double total = 0.0;
-		
-		while(!valid) {
-			System.out.print("Please input the Java, Python and C Score seperate by space: ");
-			String score = in.nextLine();
-			try {
-				String[] scores = validScore(score);
-				Java = Double.parseDouble(scores[0]);
-				Python = Double.parseDouble(scores[1]);
-				C = Double.parseDouble(scores[2]);
-				total = Java + Python + C;
-				valid = true;
-			}catch(Exception e) {
-				System.out.println(e.getMessage());
-				System.out.println();
-			}
-		}
-		
-		String sql = "insert into student values(\'" + id + "\', \'" + name + "\', " + Java + "," + Python + "," + C + "," + total + ")";
-		try {
-			statement.executeUpdate(sql);
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
-		
-	}
-	
-	private void modify() {
-		
-	}
-	
-	private void delete() {
-		//Scanner input = new Scanner(System.in);
-		System.out.print("Please input the Student ID which you want to delete: ");
-		String id = in.nextLine();
-		try {
-			if(checkId(id)) {
-				String result = search(id);
-				if(result.equals("")) {
-					System.out.println("Cannot delete! Because the Student Id is not exist!");
-					System.out.println();
-				}else {
-					System.out.println("This is the information you want to delete:");
-					System.out.println(result);
-					boolean deleted = false;
-					do {
-						System.out.print("Are you sure to delete? ('y' / 'n'): ");
-						String ch = in.nextLine();
-						if(check(ch)) {
-							if(ch.equalsIgnoreCase("y")){
-								String sql = "delete from student where stu_id = \'" + id + "\'";
-								System.out.println("Deleting the information...");
-								try {
-									statement.executeUpdate(sql);
-								}catch(SQLException e) {
-									e.printStackTrace();
-								}
-								System.out.println("The " + id + "'s information has been removed!");
-								deleted = true;
-							}else if(ch.equalsIgnoreCase("n")) {
-								System.out.println("The " + id + "'s information doesn't delete!");
-								break;
-							}
-						}
-					}while(!deleted);
-				}
-			}
-		}catch(Exception e) {
-			System.out.println(e.getMessage());
-			System.out.println();
-		}
-		
-	
-	}
-	
-	private boolean check(String ch) {
-		boolean valid = false;
-		if(!ch.equalsIgnoreCase("y") && !ch.equalsIgnoreCase("n")) {
-			System.out.println("Please input 'y' or 'n'! Please input again!");
-		}else {
-			valid = true;
-		}
-		return valid;
-	}
-	
-	private String checkChoose(String input) {
-		String choose = input;
-		if(!isNum(choose)) {
-			System.out.println("Don't input the Strings! Please input again!");
-		}else {
-			if(Integer.parseInt(choose) < 0 || Integer.parseInt(choose) > 5) {
-				System.out.println("Please input the number between 0 to 5! Please input again!");
-			}
-		}
-		return choose;
-	}
-	
-	private boolean checkId(String id) {
-		boolean check = false;
-		if(id.length() != 10) {
-			System.out.println("The length of the Student ID must be 10! Please input again!");
-		}else if(!isNum(id)) {
-			System.out.println("The Student ID only consists of numbers! Please input again!");
-		}else {
-			check = true;
-		}
-		
-		return check;
-	}
-	
-	private String[] validScore(String score) {
-		String[] input = score.split(" ");
-		if(input.length != 3) {
-			System.out.println("You should input Java, Python and C Score at the same time and separate them by space! Please input again!");
-		}else {
-			if(!isDouble(input[0]) || !isDouble(input[1]) || !isDouble(input[2])) {
-				System.out.println("The score should be numbers! Please input again!");
-			}
-		}
-		
-		return input;
-	}
-	
-	private boolean isNum(String input) {
-		for(int i = 0; i < input.length(); i++) {
-			if(!Character.isDigit(input.charAt(i))) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	private boolean isDouble(String score) {
-		if (null == score || "".equals(score)) {
-			return false;
-		}
-		Pattern pattern = Pattern.compile("^[-\\+]?[.\\d]*$");
-		return pattern.matcher(score).matches();
-	}
 	
 }
 
