@@ -20,10 +20,11 @@ import java.util.regex.Pattern;
 public class SGMS {
 
 	Statement statement = null;
+	Scanner in = new Scanner(System.in);
 	
 	public void MainPage() {
 		// TODO Auto-generated method stub
-		Scanner in = new Scanner(System.in);
+		//Scanner in = new Scanner(System.in);
 		String input = "";
 		String choose = "";
 		
@@ -35,10 +36,11 @@ public class SGMS {
 			System.out.println("1. Search Student Infomation by input Student ID;");
 			System.out.println("2. Show all the Infomation;");
 			System.out.println("3. Add Information;");
-			System.out.println("4. Delete Information;");
+			System.out.println("4. Modify Information by input Student ID;");
+			System.out.println("5. Delete Information;");
 			System.out.println("0. Quit.");
 			System.out.println("*************************************************");
-			System.out.print("Please choose the steps by input 0 to 4: ");
+			System.out.print("Please choose the steps by input 0 to 5: ");
 			input = in.nextLine();
 			try {
 				choose = checkChoose(input);
@@ -79,6 +81,8 @@ public class SGMS {
 				}else if(choose.equals("3")) {
 					add();
 				}else if(choose.equals("4")) {
+					modify();
+				}else if(choose.equals("5")) {
 					delete();
 				}else if(choose.equals("0")) {
 					System.out.println("Quit! Thank you for using!");
@@ -110,7 +114,7 @@ public class SGMS {
 		try {
 			resultSet = statement.executeQuery(sql);
 			if(resultSet.next()) {
-				result.append("Student ID\t\tName\tJava\tPython\tC\t\tTotalScore");
+				result.append("Student ID\tName\tJava\tPython\tC\tTotalScore");
 				result.append("\n" + resultSet.getString("stu_id"));
 				result.append("\t" + resultSet.getString("stu_name"));
 				result.append("\t" + resultSet.getString("Java_score"));
@@ -138,7 +142,7 @@ public class SGMS {
 			
 			while(resultSet.next()) {
 				if(first) {
-					result.append("Student ID\t\tName\tJava\tPython\tC\t\tTotalScore");
+					result.append("Student ID\tName\tJava\tPython\tC\tTotalScore");
 					first = false;
 				}
 				result.append("\n" + resultSet.getString("stu_id"));
@@ -158,7 +162,7 @@ public class SGMS {
 	}
 	
 	private void add() {
-		Scanner in = new Scanner(System.in);
+		//Scanner input = new Scanner(System.in);
 		boolean duplicate = true;
 		String id = "";
 		while(duplicate) {
@@ -170,7 +174,7 @@ public class SGMS {
 					if(exist.equals("")) {
 						duplicate = false;
 					}else {
-						System.out.println("The student ID is exist! Please input another one!");
+						System.out.println("The Student ID is exist! Please input another one!");
 						System.out.println();
 					}
 				}
@@ -214,11 +218,64 @@ public class SGMS {
 			e.printStackTrace();
 		}
 		
-		in.close();
+	}
+	
+	private void modify() {
+		
 	}
 	
 	private void delete() {
+		//Scanner input = new Scanner(System.in);
+		System.out.print("Please input the Student ID which you want to delete: ");
+		String id = in.nextLine();
+		try {
+			if(checkId(id)) {
+				String result = search(id);
+				if(result.equals("")) {
+					System.out.println("Cannot delete! Because the Student Id is not exist!");
+					System.out.println();
+				}else {
+					System.out.println("This is the information you want to delete:");
+					System.out.println(result);
+					boolean deleted = false;
+					do {
+						System.out.print("Are you sure to delete? ('y' / 'n'): ");
+						String ch = in.nextLine();
+						if(check(ch)) {
+							if(ch.equalsIgnoreCase("y")){
+								String sql = "delete from student where stu_id = \'" + id + "\'";
+								System.out.println("Deleting the information...");
+								try {
+									statement.executeUpdate(sql);
+								}catch(SQLException e) {
+									e.printStackTrace();
+								}
+								System.out.println("The " + id + "'s information has been removed!");
+								deleted = true;
+							}else if(ch.equalsIgnoreCase("n")) {
+								System.out.println("The " + id + "'s information doesn't delete!");
+								break;
+							}
+						}
+					}while(!deleted);
+				}
+			}
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+			System.out.println();
+		}
 		
+	
+	}
+	
+	private boolean check(String ch) {
+		boolean valid = false;
+		if(!ch.equalsIgnoreCase("y") && !ch.equalsIgnoreCase("n")) {
+			System.out.println("Please input 'y' or 'n'! Please input again!");
+		}else {
+			valid = true;
+		}
+		return valid;
 	}
 	
 	private String checkChoose(String input) {
@@ -226,8 +283,8 @@ public class SGMS {
 		if(!isNum(choose)) {
 			System.out.println("Don't input the Strings! Please input again!");
 		}else {
-			if(Integer.parseInt(choose) < 0 || Integer.parseInt(choose) > 4) {
-				System.out.println("Please input the number between 0 to 4! Please input again!");
+			if(Integer.parseInt(choose) < 0 || Integer.parseInt(choose) > 5) {
+				System.out.println("Please input the number between 0 to 5! Please input again!");
 			}
 		}
 		return choose;
@@ -275,5 +332,6 @@ public class SGMS {
 		Pattern pattern = Pattern.compile("^[-\\+]?[.\\d]*$");
 		return pattern.matcher(score).matches();
 	}
+	
 }
 
