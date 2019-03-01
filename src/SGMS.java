@@ -33,8 +33,8 @@ public class SGMS {
 		do {
 			System.out.println("*************************************************");
 			System.out.println("Welcome to Student Grades Management System:");
-			System.out.println("1. Search Student Infomation by input Student ID;");
-			System.out.println("2. Show all the Infomation;");
+			System.out.println("1. Search Student Information by input Student ID;");
+			System.out.println("2. Show all the Information;");
 			System.out.println("3. Add Information;");
 			System.out.println("4. Modify Information by input Student ID;");
 			System.out.println("5. Delete Information;");
