@@ -23,6 +23,7 @@ public class checkFunctions {
 				System.out.println("Please input the number between 0 to 5! Please input again!");
 			}
 		}
+		
 		return choose;
 	}
 	
@@ -58,6 +59,7 @@ public class checkFunctions {
 				return false;
 			}
 		}
+		
 		return true;
 	}
 	
@@ -66,6 +68,7 @@ public class checkFunctions {
 			return false;
 		}
 		Pattern pattern = Pattern.compile("^[-\\+]?[.\\d]*$");
+		
 		return pattern.matcher(score).matches();
 	}
 }

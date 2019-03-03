@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 
 public class JDBC_Connection {
+	
 	// MySQL JDBC Driver
     public static final String DRIVER_MYSQL = "com.mysql.jdbc.Driver";    
     // connect to MySQL

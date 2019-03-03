@@ -11,4 +11,5 @@ public class Main {
 		SGMS mainPage = new SGMS();
 		mainPage.MainPage();
 	}
+	
 }

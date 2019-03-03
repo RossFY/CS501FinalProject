@@ -126,7 +126,6 @@ public class Operations {
 		
 		System.out.println("Adding complete!");
 		System.out.println();
-		
 	}
 	
 	public void modify() {
@@ -406,6 +405,5 @@ public class Operations {
 			System.out.println();
 		}
 		
-	
 	}
 }
